@@ -29,11 +29,12 @@ class Anal:
 
         # replace place holder
         for i, place_holder in enumerate(self.place_holders):
-            value: str = texts[i] + '\033[0m'
+            max_size: int = self.get_window_width() \
+                - place_holder.x \
+                - self.get_text_length(texts[i])
+            value: str = texts[i][:max_size] + '\033[0m'
             if place_holder.length == 0:
-                value += ' ' * (self.get_window_width()
-                                - place_holder.x
-                                - self.get_text_length(texts[i]))
+                value += ' ' * max_size
             else:
                 value += ' ' * place_holder.length
 
