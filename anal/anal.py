@@ -29,11 +29,13 @@ class Anal:
 
         # replace place holder
         for i, place_holder in enumerate(self.place_holders):
-            value: str = ''
+            value: str = texts[i] + '\033[0m'
             if place_holder.length == 0:
-                value = texts[i]
+                value += ' ' * (self.get_window_width()
+                                - place_holder.x
+                                - self.get_text_length(texts[i]))
             else:
-                value = texts[i] + (' ' * place_holder.length)
+                value += ' ' * place_holder.length
 
             self.move_init_position()
             sys.stdout.write('\033[%dC\033[%dB%s' % (
