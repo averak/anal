@@ -59,10 +59,11 @@ class Anal:
             )
         os.system('clear')
         sys.stdout.write(template)
+        self.move_init_position()
 
     def move_init_position(self) -> None:
         sys.stdout.write('\033[%dA\033[%dD' % (
-            len(self.template.split('\n')) + 1,
+            len(self.template.split('\n')),
             self.get_window_width(),
         ))
         return
@@ -84,7 +85,7 @@ class Anal:
             if '$' not in line:
                 continue
 
-            columns: list = line.split('$')[:-1]
+            columns: list = re.split(r'\$[0-9\-]+', line)[:-1]
             bias: int = 0
             for col in columns:
                 place_holder_info: PlaceHolderInfo = PlaceHolderInfo()
@@ -93,7 +94,7 @@ class Anal:
                 place_holder_info.length = place_holders_size.pop(0)
                 result.append(place_holder_info)
 
-                bias = place_holder_info.x + place_holder_info.length - 1
+                bias = place_holder_info.x + place_holder_info.length
 
         return result
 
