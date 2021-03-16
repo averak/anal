@@ -34,16 +34,17 @@ class Anal:
                 - self.get_text_length(texts[i])
             value: str = texts[i][:max_size] + '\033[0m'
             if place_holder.length == 0:
-                value += ' ' * max_size
+                value = value.ljust(
+                    max_size + self.get_text_length(value), ' ')
             else:
-                value += ' ' * place_holder.length
+                value = value.ljust(place_holder.length, ' ')
 
-            self.move_init_position()
             sys.stdout.write('\033[%dC\033[%dB%s' % (
                 place_holder.x,
                 place_holder.y,
                 value,
             ))
+            self.move_init_position()
 
         sys.stdout.flush()
 
@@ -51,7 +52,7 @@ class Anal:
         template: str = self.template
         for place_holder in self.place_holders:
             template = re.sub(
-                r'\$[1-9\-]+',
+                r'\$[0-9\-]+',
                 ' ' * place_holder.length,
                 template,
                 1,
@@ -61,7 +62,7 @@ class Anal:
 
     def move_init_position(self) -> None:
         sys.stdout.write('\033[%dA\033[%dD' % (
-            len(self.template.split('\n')),
+            len(self.template.split('\n')) + 1,
             self.get_window_width(),
         ))
         return
@@ -71,7 +72,7 @@ class Anal:
 
         # get place holder size
         place_holders_size: list = []
-        for place_holder_str in re.findall(r'\$[1-9\-]+', self.template):
+        for place_holder_str in re.findall(r'\$[0-9\-]+', self.template):
             detail: re.Match = re.search(r'\d+', place_holder_str)
             if detail is None:
                 place_holders_size.append(0)
@@ -92,7 +93,7 @@ class Anal:
                 place_holder_info.length = place_holders_size.pop(0)
                 result.append(place_holder_info)
 
-                bias = place_holder_info.x + place_holder_info.length
+                bias = place_holder_info.x + place_holder_info.length - 1
 
         return result
 
